@@ -293,7 +293,7 @@ impl JellyfinClient {
             })?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
-        dbg!(req.body_string());
+        dbg!(req.body_string().await?);
         self.auth = Some(req.body_json::<UserAuth>().await?);
         Ok(())
     }
