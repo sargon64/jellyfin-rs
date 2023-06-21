@@ -1,0 +1,17 @@
+[package]
+name = "jellyfin"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+md5 = "0.7.0"
+serde = { version = "1.0.164", features = ["derive"] }
+serde_derive = "1.0.164"
+serde_json = "1.0.97"
+sha1 = "0.10.5"
+strfmt = "0.2.4"
+surf = "2.3.2"
+url = "2.4.0"
+whoami = "1.4.0"
