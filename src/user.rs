@@ -46,7 +46,7 @@ pub struct User {
 #[serde(rename_all = "camelCase")]
 pub struct UserConfiguration {
     #[serde(rename = "AudioLanguagePreference")]
-    pub audio_language_preference: String,
+    pub audio_language_preference: Option<String>,
     #[serde(rename = "PlayDefaultAudioTrack")]
     pub play_default_audio_track: bool,
     #[serde(rename = "SubtitleLanguagePreference")]
