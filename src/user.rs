@@ -87,7 +87,7 @@ pub struct UserPolicy {
     #[serde(rename = "IsDisabled")]
     pub is_disabled: bool,
     #[serde(rename = "MaxParentalRating")]
-    pub max_parental_rating: i64,
+    pub max_parental_rating: Option<i64>,
     #[serde(rename = "BlockedTags")]
     pub blocked_tags: Vec<String>,
     #[serde(rename = "EnableUserPreferenceAccess")]
