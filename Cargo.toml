@@ -2,6 +2,12 @@
 name = "jellyfin"
 version = "0.1.0"
 edition = "2021"
+licence = "MIT"
+keywords = ["media", "jellyfin", "streaming"]
+categories = ["api-bindings"]
+description = "Bindings to the jellyfin web API"
+homepage = "https://github.com/sargon64/jellyfin-rs"
+repository = "https://github.com/sargon64/jellyfin-rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
