@@ -8,8 +8,13 @@ categories = ["api-bindings"]
 description = "Bindings to the jellyfin web API"
 homepage = "https://github.com/sargon64/jellyfin-rs"
 repository = "https://github.com/sargon64/jellyfin-rs"
-
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+    "LICENSE"
+]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 
 [dependencies]
 md5 = "0.7.0"
