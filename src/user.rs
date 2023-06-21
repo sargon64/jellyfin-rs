@@ -295,7 +295,7 @@ impl JellyfinClient {
             .await?;
         dbg!(req.body_string().await?);
 
-        self.auth = Some(req.body_json::<UserAuth>().await?);
+        self.auth = Some(serde_json::from_str(&req.body_string().await?).unwrap());
         Ok(())
     }
 
