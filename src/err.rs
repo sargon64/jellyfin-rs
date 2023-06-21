@@ -6,7 +6,8 @@ pub type Result<T> = std::result::Result<T, JellyfinError>;
 pub enum JellyfinError {
     NetworkError(surf::Error),
     UrlParseError(url::ParseError),
-    StrFmtError(strfmt::FmtError)
+    StrFmtError(strfmt::FmtError),
+    AuthNotFound
 }
 
 impl fmt::Display for JellyfinError {
@@ -20,6 +21,9 @@ impl fmt::Display for JellyfinError {
             }
             Self::StrFmtError(v) => {
                 write!(f,"{}", v)
+            }
+            Self::AuthNotFound => {
+                write!(f, "Unauthorized.")
             }
         }
     }

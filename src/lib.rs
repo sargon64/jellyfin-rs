@@ -1,4 +1,5 @@
 use url::Url;
+use user::UserAuth;
 
 mod user;
 mod err;
@@ -6,16 +7,18 @@ mod session;
 mod items;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct JellyfinConnection {
-    url: Url
+pub struct JellyfinClient {
+    url: Url,
+    auth: Option<UserAuth>
 }
 
-impl JellyfinConnection {
+impl JellyfinClient {
     /// Creates a new `JellyfinConnection`
     /// * `url` The base jellyfin server url, without a traling "/"
-    pub fn new<T: Into<Url>>(url: T) -> Self {
-        Self {
-            url: url.into()
-        }
+    pub fn new(url: String) -> err::Result<Self> {
+        Ok(Self {
+            url: Url::parse(&url)?,
+            auth: None
+        })
     }
 }
