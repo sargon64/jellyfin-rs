@@ -1,10 +1,10 @@
 use url::Url;
 use user::UserAuth;
 
-mod user;
-mod err;
-mod session;
-mod items;
+pub mod user;
+pub mod err;
+pub mod session;
+pub mod items;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct JellyfinClient {
