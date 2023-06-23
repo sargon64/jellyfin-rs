@@ -21,7 +21,7 @@ pub struct User {
     #[serde(rename = "Id")]
     pub id: String,
     #[serde(rename = "PrimaryImageTag")]
-    pub primary_image_tag: String,
+    pub primary_image_tag: Option<String>,
     #[serde(rename = "HasPassword")]
     pub has_password: bool,
     #[serde(rename = "HasConfiguredPassword")]
@@ -31,15 +31,15 @@ pub struct User {
     #[serde(rename = "EnableAutoLogin")]
     pub enable_auto_login: bool,
     #[serde(rename = "LastLoginDate")]
-    pub last_login_date: String,
+    pub last_login_date: Option<String>,
     #[serde(rename = "LastActivityDate")]
-    pub last_activity_date: String,
+    pub last_activity_date: Option<String>,
     #[serde(rename = "Configuration")]
     pub configuration: UserConfiguration,
     #[serde(rename = "Policy")]
     pub policy: UserPolicy,
     #[serde(rename = "PrimaryImageAspectRatio")]
-    pub primary_image_aspect_ratio: i64,
+    pub primary_image_aspect_ratio: Option<i64>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -293,9 +293,8 @@ impl JellyfinClient {
             })?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
-        dbg!(req.body_string().await?);
-
-        self.auth = Some(serde_json::from_str(&req.body_string().await?).unwrap());
+        
+        self.auth = Some(req.body_json::<UserAuth>().await?);
         Ok(())
     }
 
@@ -351,7 +350,6 @@ impl JellyfinClient {
             }))?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
-
         self.auth = Some(req.body_json::<UserAuth>().await?);
         Ok(())
     }

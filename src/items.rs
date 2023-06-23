@@ -17,7 +17,7 @@ pub struct MediaItem {
     #[serde(rename = "SourceType")]
     pub source_type: String,
     #[serde(rename = "PlaylistItemId")]
-    pub playlist_item_id: String,
+    pub playlist_item_id: Option<String>,
     #[serde(rename = "DateCreated")]
     pub date_created: String,
     #[serde(rename = "DateLastMediaAdded")]
@@ -153,7 +153,7 @@ pub struct MediaItem {
     #[serde(rename = "Tags")]
     pub tags: Vec<String>,
     #[serde(rename = "PrimaryImageAspectRatio")]
-    pub primary_image_aspect_ratio: i64,
+    pub primary_image_aspect_ratio: Option<i64>,
     #[serde(rename = "Artists")]
     pub artists: Vec<String>,
     #[serde(rename = "ArtistItems")]
@@ -372,7 +372,7 @@ pub struct MediaSource {
     #[serde(rename = "RequiresClosing")]
     pub requires_closing: bool,
     #[serde(rename = "LiveStreamId")]
-    pub live_stream_id: String,
+    pub live_stream_id: Option<String>,
     #[serde(rename = "BufferMs")]
     pub buffer_ms: i64,
     #[serde(rename = "RequiresLooping")]
@@ -587,7 +587,7 @@ pub struct People {
     #[serde(rename = "Type")]
     pub type_field: String,
     #[serde(rename = "PrimaryImageTag")]
-    pub primary_image_tag: String,
+    pub primary_image_tag: Option<String>,
     #[serde(rename = "ImageBlurHashes")]
     pub image_blur_hashes: ImageBlurHashes,
 }
@@ -817,5 +817,5 @@ pub struct NowPlayingQueue {
     #[serde(rename = "Id")]
     pub id: String,
     #[serde(rename = "PlaylistItemId")]
-    pub playlist_item_id: String,
+    pub playlist_item_id: Option<String>,
 }

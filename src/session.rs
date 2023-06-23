@@ -28,25 +28,25 @@ pub struct SessionInfo {
     #[serde(rename = "Client")]
     pub client: String,
     #[serde(rename = "LastActivityDate")]
-    pub last_activity_date: String,
+    pub last_activity_date: Option<String>,
     #[serde(rename = "LastPlaybackCheckIn")]
     pub last_playback_check_in: String,
     #[serde(rename = "DeviceName")]
     pub device_name: String,
     #[serde(rename = "DeviceType")]
-    pub device_type: String,
+    pub device_type: Option<String>,
     #[serde(rename = "NowPlayingItem")]
-    pub now_playing_item: MediaItem,
+    pub now_playing_item: Option<MediaItem>,
     #[serde(rename = "FullNowPlayingItem")]
-    pub full_now_playing_item: FullNowPlayingItem,
+    pub full_now_playing_item: Option<FullNowPlayingItem>,
     #[serde(rename = "NowViewingItem")]
-    pub now_viewing_item: MediaItem,
+    pub now_viewing_item: Option<MediaItem>,
     #[serde(rename = "DeviceId")]
     pub device_id: String,
     #[serde(rename = "ApplicationVersion")]
     pub application_version: String,
     #[serde(rename = "TranscodingInfo")]
-    pub transcoding_info: TranscodingInfo,
+    pub transcoding_info: Option<TranscodingInfo>,
     #[serde(rename = "IsActive")]
     pub is_active: bool,
     #[serde(rename = "SupportsMediaControl")]
@@ -60,11 +60,11 @@ pub struct SessionInfo {
     #[serde(rename = "HasCustomDeviceName")]
     pub has_custom_device_name: bool,
     #[serde(rename = "PlaylistItemId")]
-    pub playlist_item_id: String,
+    pub playlist_item_id: Option<String>,
     #[serde(rename = "ServerId")]
     pub server_id: String,
     #[serde(rename = "UserPrimaryImageTag")]
-    pub user_primary_image_tag: String,
+    pub user_primary_image_tag: Option<String>,
     #[serde(rename = "SupportedCommands")]
     pub supported_commands: Vec<String>,
 }
@@ -73,7 +73,7 @@ pub struct SessionInfo {
 #[serde(rename_all = "camelCase")]
 pub struct PlayState {
     #[serde(rename = "PositionTicks")]
-    pub position_ticks: i64,
+    pub position_ticks: Option<i64>,
     #[serde(rename = "CanSeek")]
     pub can_seek: bool,
     #[serde(rename = "IsPaused")]
@@ -81,19 +81,19 @@ pub struct PlayState {
     #[serde(rename = "IsMuted")]
     pub is_muted: bool,
     #[serde(rename = "VolumeLevel")]
-    pub volume_level: i64,
+    pub volume_level: Option<i64>,
     #[serde(rename = "AudioStreamIndex")]
-    pub audio_stream_index: i64,
+    pub audio_stream_index: Option<i64>,
     #[serde(rename = "SubtitleStreamIndex")]
-    pub subtitle_stream_index: i64,
+    pub subtitle_stream_index: Option<i64>,
     #[serde(rename = "MediaSourceId")]
-    pub media_source_id: String,
+    pub media_source_id: Option<String>,
     #[serde(rename = "PlayMethod")]
-    pub play_method: String,
+    pub play_method: Option<String>,
     #[serde(rename = "RepeatMode")]
     pub repeat_mode: String,
     #[serde(rename = "LiveStreamId")]
-    pub live_stream_id: String,
+    pub live_stream_id: Option<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -117,17 +117,17 @@ pub struct Capabilities {
     #[serde(rename = "SupportsContentUploading")]
     pub supports_content_uploading: bool,
     #[serde(rename = "MessageCallbackUrl")]
-    pub message_callback_url: String,
+    pub message_callback_url: Option<String>,
     #[serde(rename = "SupportsPersistentIdentifier")]
     pub supports_persistent_identifier: bool,
     #[serde(rename = "SupportsSync")]
     pub supports_sync: bool,
     #[serde(rename = "DeviceProfile")]
-    pub device_profile: DeviceProfile,
+    pub device_profile: Option<DeviceProfile>,
     #[serde(rename = "AppStoreUrl")]
-    pub app_store_url: String,
+    pub app_store_url: Option<String>,
     #[serde(rename = "IconUrl")]
-    pub icon_url: String,
+    pub icon_url: Option<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

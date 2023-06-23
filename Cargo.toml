@@ -26,3 +26,7 @@ strfmt = "0.2.4"
 surf = "2.3.2"
 url = "2.4.0"
 whoami = "1.4.0"
+
+[dev-dependencies]
+tokio = { version = "*", features = ["full"] }
+colored = "*"
