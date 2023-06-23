@@ -13,8 +13,10 @@ include = [
     "Cargo.toml",
     "LICENSE"
 ]
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+debug = []
 
 [dependencies]
 md5 = "0.7.0"
@@ -28,4 +30,3 @@ whoami = "1.4.0"
 
 [dev-dependencies]
 tokio = { version = "*", features = ["full"] }
-colored = "*"

@@ -240,6 +240,11 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
+
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
+
         Ok(req.body_json::<Vec<User>>().await?)
     }
 
@@ -257,11 +262,16 @@ impl JellyfinClient {
                 .to_emby_header(),
         )
         .await?;
+
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
+
         Ok(req.body_json::<User>().await?)
     }
 
     pub async fn delete_user<T: Into<String>>(&self, id: T) -> Result<()> {
-        let _req = surf::delete(&self.url.join("/Users/")?.join(id.into().as_str())?)
+        let mut req = surf::delete(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -270,11 +280,16 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
+
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
+
         Ok(())
     }
 
     pub async fn update_user<T: Into<String>>(&self, id: T, new_info: User) -> Result<()> {
-        let _req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
+        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .body_json(&new_info)?
             .header(
                 "X-Emby-Authorization",
@@ -284,6 +299,10 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
+
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
         Ok(())
     }
 
@@ -304,6 +323,10 @@ impl JellyfinClient {
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
 
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
+
         self.auth = Some(req.body_json::<UserAuth>().await?);
         Ok(())
     }
@@ -313,7 +336,7 @@ impl JellyfinClient {
         id: T,
         new_conf: UserConfiguration,
     ) -> Result<()> {
-        let _req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
+        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .body_json(&new_conf)?
             .header(
                 "X-Emby-Authorization",
@@ -323,6 +346,11 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
+
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
+
         Ok(())
     }
 
@@ -331,7 +359,7 @@ impl JellyfinClient {
         id: T,
         new_password: T,
     ) -> Result<()> {
-        let _req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
+        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .body_json(&json!({ "NewPw": new_password.into() }))?
             .header(
                 "X-Emby-Authorization",
@@ -341,6 +369,11 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
+
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
+
         Ok(())
     }
 
@@ -349,7 +382,7 @@ impl JellyfinClient {
         id: T,
         new_policy: UserPolicy,
     ) -> Result<()> {
-        let _req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
+        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .body_json(&new_policy)?
             .header(
                 "X-Emby-Authorization",
@@ -359,6 +392,9 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
         Ok(())
     }
 
@@ -376,6 +412,9 @@ impl JellyfinClient {
             }))?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
         self.auth = Some(req.body_json::<UserAuth>().await?);
         Ok(())
     }
@@ -383,24 +422,30 @@ impl JellyfinClient {
     pub async fn user_forgot_password<T: Into<String>>(&self, username: T) -> Result<()> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let _req = surf::post(&self.url.join("/Users/SendPasswordResetEmail")?)
+        let mut req = surf::post(&self.url.join("/Users/SendPasswordResetEmail")?)
             .body_json(&json!({
                 "EnteredUsername": username.into()
             }))?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
         Ok(())
     }
 
     pub async fn user_redeem_forgot_password_pin<T: Into<String>>(&self, pin: T) -> Result<()> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let _req = surf::post(&self.url.join("/Users/RedeemPasswordResetToken")?)
+        let mut req = surf::post(&self.url.join("/Users/RedeemPasswordResetToken")?)
             .body_json(&json!({
                 "Pin": pin.into()
             }))?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
         Ok(())
     }
 
@@ -414,6 +459,9 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
         Ok(req.body_json::<User>().await?)
     }
 
@@ -431,6 +479,9 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
         Ok(req.body_json::<User>().await?)
     }
 
@@ -440,6 +491,9 @@ impl JellyfinClient {
         let mut req = surf::get(&self.url.join("/Users/Public")?)
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
+        if cfg!(debug) {
+            dbg!(req.body_string().await?);
+        };
         Ok(req.body_json::<Vec<User>>().await?)
     }
 }
