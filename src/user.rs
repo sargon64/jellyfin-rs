@@ -315,7 +315,7 @@ impl JellyfinClient {
         hasher.update(password.clone().into());
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
+        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?.join("/Authenticate")?)
             .query(&AuthUserStdQuery {
                 pw: password.into(),
                 password: format!("{:x}", hasher.finalize())
