@@ -222,16 +222,25 @@ struct AuthUserStdQuery {
     password: String,
 }
 
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+struct AuthUserNameQuery {
+    username: String,
+    pw: String,
+}
+
 //TODO: use phantom data to make auth better
 //TODO: add docs
 impl JellyfinClient {
     /// Gets a list of all users that the `UserAuth` has access to, given some filters.
     pub async fn get_users(&self, is_hidden: bool, is_disabled: bool) -> Result<Vec<User>> {
-        let mut req = surf::get(&self.url.join("/Users")?)
+        let req = self
+            .client
+            .get(self.url.join("/Users")?)
             .query(&GetUsersQuery {
                 is_hidden,
                 is_disabled,
-            })?
+            })
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -239,39 +248,16 @@ impl JellyfinClient {
                     .ok_or(JellyfinError::AuthNotFound)?
                     .to_emby_header(),
             )
+            .send()
             .await?;
 
-        if true {
-            dbg!(req.body_string().await?);
-        };
-
-        Ok(req.body_json::<Vec<User>>().await?)
+        Ok(req.json().await?)
     }
 
     pub async fn get_user_by_id<T: Into<String>>(&self, id: T) -> Result<User> {
-        let mut req = surf::get(
-            &self
-                .url
-                .join("/Users/".to_owned().add(id.into().as_str()).as_str())?,
-        )
-        .header(
-            "X-Emby-Authorization",
-            self.auth
-                .as_ref()
-                .ok_or(JellyfinError::AuthNotFound)?
-                .to_emby_header(),
-        )
-        .await?;
-
-        if true {
-            dbg!(req.body_string().await?);
-        };
-
-        Ok(req.body_json::<User>().await?)
-    }
-
-    pub async fn delete_user<T: Into<String>>(&self, id: T) -> Result<()> {
-        let mut req = surf::delete(&self.url.join("/Users/")?.join(id.into().as_str())?)
+        let req = self
+            .client
+            .get(self.url.join("/Users")?.join(id.into().as_str())?)
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -279,18 +265,34 @@ impl JellyfinClient {
                     .ok_or(JellyfinError::AuthNotFound)?
                     .to_emby_header(),
             )
+            .send()
             .await?;
 
-        if true {
-            dbg!(req.body_string().await?);
-        };
+        Ok(req.json().await?)
+    }
+
+    pub async fn delete_user<T: Into<String>>(&self, id: T) -> Result<()> {
+        let req = self
+            .client
+            .delete(self.url.join("/Users")?.join(id.into().as_str())?)
+            .header(
+                "X-Emby-Authorization",
+                self.auth
+                    .as_ref()
+                    .ok_or(JellyfinError::AuthNotFound)?
+                    .to_emby_header(),
+            )
+            .send()
+            .await?;
 
         Ok(())
     }
 
     pub async fn update_user<T: Into<String>>(&self, id: T, new_info: User) -> Result<()> {
-        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
-            .body_json(&new_info)?
+        let req = self
+            .client
+            .post(self.url.join("/Users")?.join(id.into().as_str())?)
+            .json(&new_info)
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -298,11 +300,9 @@ impl JellyfinClient {
                     .ok_or(JellyfinError::AuthNotFound)?
                     .to_emby_header(),
             )
+            .send()
             .await?;
 
-        if true {
-            dbg!(req.body_string().await?);
-        };
         Ok(())
     }
 
@@ -313,21 +313,19 @@ impl JellyfinClient {
     ) -> Result<()> {
         let mut hasher = sha1::Sha1::new();
         hasher.update(password.clone().into());
+
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?.join("/Authenticate")?)
+        let req = self
+            .client.post(self.url.join("/Users")?.join(id.into().as_str())?.join("/Authenticate")?)
             .query(&AuthUserStdQuery {
                 pw: password.into(),
                 password: format!("{:x}", hasher.finalize())
-            })?
-            .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
+            }).header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
+            .send()
             .await?;
 
-        if true {
-            dbg!(req.body_string().await?);
-        };
-
-        self.auth = Some(req.body_json::<UserAuth>().await?);
+        self.auth = Some(req.json().await?);
         Ok(())
     }
 
@@ -336,8 +334,15 @@ impl JellyfinClient {
         id: T,
         new_conf: UserConfiguration,
     ) -> Result<()> {
-        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
-            .body_json(&new_conf)?
+        let req = self
+            .client
+            .post(
+                self.url
+                    .join("/Users")?
+                    .join(id.into().as_str())?
+                    .join("/Configuration")?,
+            )
+            .json(&new_conf)
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -345,11 +350,8 @@ impl JellyfinClient {
                     .ok_or(JellyfinError::AuthNotFound)?
                     .to_emby_header(),
             )
+            .send()
             .await?;
-
-        if true {
-            dbg!(req.body_string().await?);
-        };
 
         Ok(())
     }
@@ -359,8 +361,15 @@ impl JellyfinClient {
         id: T,
         new_password: T,
     ) -> Result<()> {
-        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
-            .body_json(&json!({ "NewPw": new_password.into() }))?
+        let req = self
+            .client
+            .post(
+                self.url
+                    .join("/Users")?
+                    .join(id.into().as_str())?
+                    .join("/Password")?,
+            )
+            .json(&json!({ "NewPw": new_password.into() }))
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -368,11 +377,8 @@ impl JellyfinClient {
                     .ok_or(JellyfinError::AuthNotFound)?
                     .to_emby_header(),
             )
+            .send()
             .await?;
-
-        if true {
-            dbg!(req.body_string().await?);
-        };
 
         Ok(())
     }
@@ -382,8 +388,15 @@ impl JellyfinClient {
         id: T,
         new_policy: UserPolicy,
     ) -> Result<()> {
-        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
-            .body_json(&new_policy)?
+        let req = self
+            .client
+            .post(
+                self.url
+                    .join("/Users")?
+                    .join(id.into().as_str())?
+                    .join("/Policy")?,
+            )
+            .json(&new_policy)
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -391,10 +404,9 @@ impl JellyfinClient {
                     .ok_or(JellyfinError::AuthNotFound)?
                     .to_emby_header(),
             )
+            .send()
             .await?;
-        if true {
-            dbg!(req.body_string().await?);
-        };
+
         Ok(())
     }
 
@@ -405,52 +417,51 @@ impl JellyfinClient {
     ) -> Result<()> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::post(&self.url.join("/Users/AuthenticateByName")?)
-            .body_json(&json!({
-                "Username": username.into(),
-                "Pw": password.into()
-            }))?
+        let req = self.client.post(self.url.join("/Users/AuthenticateByName")?)
+            .json(&AuthUserNameQuery {
+                username: username.into(),
+                pw: password.into()
+            })
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
+            .send()
             .await?;
-        if true {
-            dbg!(req.body_string().await?);
-        };
-        self.auth = Some(req.body_json::<UserAuth>().await?);
+
+        self.auth = Some(req.json().await?);
         Ok(())
     }
 
     pub async fn user_forgot_password<T: Into<String>>(&self, username: T) -> Result<()> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::post(&self.url.join("/Users/SendPasswordResetEmail")?)
-            .body_json(&json!({
+        let req = self.client.post(self.url.join("/Users/SendPasswordResetEmail")?)
+            .json(&json!({
                 "EnteredUsername": username.into()
-            }))?
+            }))
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
+            .send()
             .await?;
-        if true {
-            dbg!(req.body_string().await?);
-        };
+
         Ok(())
     }
 
     pub async fn user_redeem_forgot_password_pin<T: Into<String>>(&self, pin: T) -> Result<()> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::post(&self.url.join("/Users/RedeemPasswordResetToken")?)
-            .body_json(&json!({
+        let req = self.client.post(self.url.join("/Users/RedeemPasswordResetToken")?)
+            .json(&json!({
                 "Pin": pin.into()
-            }))?
+            }))
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
+            .send()
             .await?;
-        if true {
-            dbg!(req.body_string().await?);
-        };
+
         Ok(())
     }
 
     pub async fn get_user_by_auth(&self) -> Result<User> {
-        let mut req = surf::get(&self.url.join("/Users/Authenticate")?)
+        let req = self
+            .client
+            .get(self.url.join("/Users/Authenticate")?)
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -458,19 +469,20 @@ impl JellyfinClient {
                     .ok_or(JellyfinError::AuthNotFound)?
                     .to_emby_header(),
             )
+            .send()
             .await?;
-        if true {
-            dbg!(req.body_string().await?);
-        };
-        Ok(req.body_json::<User>().await?)
+
+        Ok(req.json().await?)
     }
 
     pub async fn create_user<T: Into<String>>(&self, username: T, password: T) -> Result<User> {
-        let mut req = surf::post(&self.url.join("/Users")?)
-            .body_json(&json!({
+        let req = self
+            .client
+            .post(self.url.join("/Users")?)
+            .json(&json!({
                 "Name": username.into(),
                 "Password": password.into()
-            }))?
+            }))
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -478,23 +490,21 @@ impl JellyfinClient {
                     .ok_or(JellyfinError::AuthNotFound)?
                     .to_emby_header(),
             )
+            .send()
             .await?;
-        if true {
-            dbg!(req.body_string().await?);
-        };
-        Ok(req.body_json::<User>().await?)
+
+        Ok(req.json().await?)
     }
 
     pub async fn get_public_user_list(&self) -> Result<Vec<User>> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::get(&self.url.join("/Users/Public")?)
+        let req = self.client.get(self.url.join("/Users/Public")?)
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
+            .send()
             .await?;
-        if true {
-            dbg!(req.body_string().await?);
-        };
-        Ok(req.body_json::<Vec<User>>().await?)
+
+        Ok(req.json().await?)
     }
 }
 
