@@ -1,6 +1,3 @@
-
-
-
 use super::err::Result;
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
@@ -145,7 +142,10 @@ impl JellyfinClient {
     pub async fn get_users(&self, is_hidden: bool, is_disabled: bool) -> Result<Vec<User>> {
         let req = self
             .client
-            .get(self.url.join("/Users")?)
+            .get(format!(
+                "{}/Users",
+                self.url,
+            ))
             .query(&GetUsersQuery {
                 is_hidden,
                 is_disabled,
@@ -166,8 +166,12 @@ impl JellyfinClient {
     pub async fn get_user_by_id<T: Into<String>>(&self, id: T) -> Result<User> {
         let req = self
             .client
-            .get(self.url.join("/Users")?.join(id.into().as_str())?)
-            .header(
+            .get(format!(
+                "{}/Users/{}",
+                self.url,
+                id.into().as_str()
+            ))
+                .header(
                 "X-Emby-Authorization",
                 self.auth
                     .as_ref()
@@ -183,8 +187,12 @@ impl JellyfinClient {
     pub async fn delete_user<T: Into<String>>(&self, id: T) -> Result<()> {
         let _req = self
             .client
-            .delete(self.url.join("/Users")?.join(id.into().as_str())?)
-            .header(
+            .delete(format!(
+                "{}/Users/{}",
+                self.url,
+                id.into().as_str()
+            ))
+                .header(
                 "X-Emby-Authorization",
                 self.auth
                     .as_ref()
@@ -200,7 +208,11 @@ impl JellyfinClient {
     pub async fn update_user<T: Into<String>>(&self, id: T, new_info: User) -> Result<()> {
         let _req = self
             .client
-            .post(self.url.join("/Users")?.join(id.into().as_str())?)
+            .post(format!(
+                "{}/Users/{}",
+                self.url,
+                id.into().as_str()
+            ))
             .json(&new_info)
             .header(
                 "X-Emby-Authorization",
@@ -222,10 +234,14 @@ impl JellyfinClient {
     ) -> Result<()> {
         let mut hasher = sha1::Sha1::new();
         hasher.update(password.clone().into());
-        let device_name = whoami::devicename().replace(" ", "_");
+        let device_name = whoami::devicename().replace(' ', "_");
 
         let req = self
-            .client.post(self.url.join("/Users/")?.join(id.into().as_str())?.join("/Authenticate")?)
+            .client.post(format!(
+                "{}/Users/{}/Authenticate",
+                self.url,
+                id.into().as_str()
+            ))
             .query(&AuthUserStdQuery {
                 pw: password.into(),
                 password: format!("{:x}", hasher.finalize())
@@ -245,10 +261,11 @@ impl JellyfinClient {
         let _req = self
             .client
             .post(
-                self.url
-                    .join("/Users")?
-                    .join(id.into().as_str())?
-                    .join("/Configuration")?,
+                format!(
+                    "{}/Users/{}/Configuration",
+                    self.url,
+                    id.into().as_str()
+                )
             )
             .json(&new_conf)
             .header(
@@ -272,10 +289,11 @@ impl JellyfinClient {
         let _req = self
             .client
             .post(
-                self.url
-                    .join("/Users")?
-                    .join(id.into().as_str())?
-                    .join("/Password")?,
+                format!(
+                    "{}/Users/{}/Password",
+                    self.url,
+                    id.into().as_str()
+                )
             )
             .json(&json!({ "NewPw": new_password.into() }))
             .header(
@@ -301,7 +319,7 @@ impl JellyfinClient {
             .post(
                 format!(
                     "{}/Users/{}/Policy",
-                    self.url.to_string(),
+                    self.url,
                     id.into().as_str()
                 )
             )
@@ -326,7 +344,10 @@ impl JellyfinClient {
     ) -> Result<()> {
         let device_name = whoami::devicename().replace(' ', "_");
 
-        let req = self.client.post(self.url.join("/Users/AuthenticateByName")?)
+        let req = self.client.post(format!(
+            "{}/Users/AuthenticateByName",
+            self.url
+        ))
             .json(&AuthUserNameQuery {
                 username: username.into(),
                 pw: password.into()
@@ -342,8 +363,10 @@ impl JellyfinClient {
     pub async fn user_forgot_password<T: Into<String>>(&self, username: T) -> Result<()> {
         let device_name = whoami::devicename().replace(' ', "_");
 
-        let _req = self.client.post(self.url.join("/Users/SendPasswordResetEmail")?)
-            .json(&json!({
+        let _req = self.client.post(format!(
+            "{}/Users/ForgotPassword",
+            self.url
+        )).json(&json!({
                 "EnteredUsername": username.into()
             }))
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
@@ -356,8 +379,10 @@ impl JellyfinClient {
     pub async fn user_redeem_forgot_password_pin<T: Into<String>>(&self, pin: T) -> Result<()> {
         let device_name = whoami::devicename().replace(' ', "_");
 
-        let _req = self.client.post(self.url.join("/Users/RedeemPasswordResetToken")?)
-            .json(&json!({
+        let _req = self.client.post(format!(
+            "{}/Users/ForgotPassword/Pin",
+            self.url
+        )).json(&json!({
                 "Pin": pin.into()
             }))
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
@@ -370,7 +395,10 @@ impl JellyfinClient {
     pub async fn get_user_by_auth(&self) -> Result<User> {
         let req = self
             .client
-            .get(self.url.join("/Users/Authenticate")?)
+            .get(format!(
+                "{}/Users/Me",
+                self.url
+            ))
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -387,7 +415,10 @@ impl JellyfinClient {
     pub async fn create_user<T: Into<String>>(&self, username: T, password: T) -> Result<User> {
         let req = self
             .client
-            .post(self.url.join("/Users/New")?)
+            .post(format!(
+                "{}/Users/New",
+                self.url
+            ))
             .json(&json!({
                 "Name": username.into(),
                 "Password": password.into()
@@ -408,7 +439,10 @@ impl JellyfinClient {
     pub async fn get_public_user_list(&self) -> Result<Vec<User>> {
         let device_name = whoami::devicename().replace(' ', "_");
 
-        let req = self.client.get(self.url.join("/Users/Public")?)
+        let req = self.client.get(format!(
+            "{}/Users/Public",
+            self.url
+        ))
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .send()
             .await?;
