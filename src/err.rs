@@ -6,7 +6,6 @@ pub type Result<T> = std::result::Result<T, JellyfinError>;
 pub enum JellyfinError {
     NetworkError(surf::Error),
     UrlParseError(url::ParseError),
-    StrFmtError(strfmt::FmtError),
     AuthNotFound
 }
 
@@ -17,9 +16,6 @@ impl fmt::Display for JellyfinError {
                 write!(f,"{}", v)
             }
             Self::UrlParseError(v) => {
-                write!(f,"{}", v)
-            }
-            Self::StrFmtError(v) => {
                 write!(f,"{}", v)
             }
             Self::AuthNotFound => {
@@ -38,11 +34,5 @@ impl From<surf::Error> for JellyfinError {
 impl From<url::ParseError> for JellyfinError {
     fn from(value: url::ParseError) -> Self {
         Self::UrlParseError(value)
-    }
-}
-
-impl From<strfmt::FmtError> for JellyfinError {
-    fn from(value: strfmt::FmtError) -> Self {
-        Self::StrFmtError(value)
     }
 }

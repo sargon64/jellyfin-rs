@@ -1,9 +1,11 @@
+use std::collections::HashMap;
+use std::ops::Add;
+
 use super::err::Result;
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use serde_json::json;
 use sha1::Digest;
-use strfmt::strfmt;
 
 use super::session::SessionInfo;
 use crate::err::JellyfinError;
@@ -193,20 +195,20 @@ impl UserAuth {
     }
 }
 
-static GET_USERS_EP: &str = "/Users";
-static GET_USER_BY_ID_EP: &str = "/Users/{id}";
-static DELETE_USER_EP: &str = "/Users/{id}";
-static UPDATE_USER_EP: &str = "/Users/{id}";
-static AUTH_USER_STD_EP: &str = "/Users/{id}/Authenticate";
-static UPDATE_USER_CONF_EP: &str = "/Users/{id}/Configutation";
-static UPDATE_USER_PASSWORD_EP: &str = "/Users/{id}/Password";
-static UPDATE_USER_POLICY_EP: &str = "/Users/{id}/Policy";
-static AUTH_USER_NAME_EP: &str = "/Users/AuthenticateByName";
-static USER_FORGOT_PASSWORD_EP: &str = "/Users/ForgotPassword";
-static USER_REDEEM_FORGOT_PASSWORD_PIN_EP: &str = "/Users/ForgotPassword/Pin";
-static GET_USER_BY_AUTH_EP: &str = "/Users/Me";
-static CREATE_USER_EP: &str = "/Users/New";
-static GET_PUBLIC_USER_LIST_EP: &str = "/Users/Public";
+// static GET_USERS_EP: &str = "/Users";
+// static GET_USER_BY_ID_EP: &str = "/Users/{id}";
+// static DELETE_USER_EP: &str = "/Users/{id}";
+// static UPDATE_USER_EP: &str = "/Users/{id}";
+// static AUTH_USER_STD_EP: &str = "/Users/{id}/Authenticate";
+// static UPDATE_USER_CONF_EP: &str = "/Users/{id}/Configutation";
+// static UPDATE_USER_PASSWORD_EP: &str = "/Users/{id}/Password";
+// static UPDATE_USER_POLICY_EP: &str = "/Users/{id}/Policy";
+// static AUTH_USER_NAME_EP: &str = "/Users/AuthenticateByName";
+// static USER_FORGOT_PASSWORD_EP: &str = "/Users/ForgotPassword";
+// static USER_REDEEM_FORGOT_PASSWORD_PIN_EP: &str = "/Users/ForgotPassword/Pin";
+// static GET_USER_BY_AUTH_EP: &str = "/Users/Me";
+// static CREATE_USER_EP: &str = "/Users/New";
+// static GET_PUBLIC_USER_LIST_EP: &str = "/Users/Public";
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct GetUsersQuery {
@@ -225,7 +227,7 @@ struct AuthUserStdQuery {
 impl JellyfinClient {
     /// Gets a list of all users that the `UserAuth` has access to, given some filters.
     pub async fn get_users(&self, is_hidden: bool, is_disabled: bool) -> Result<Vec<User>> {
-        let mut req = surf::get(&self.url.join(GET_USERS_EP)?)
+        let mut req = surf::get(&self.url.join("/Users")?)
             .query(&GetUsersQuery {
                 is_hidden,
                 is_disabled,
@@ -242,20 +244,24 @@ impl JellyfinClient {
     }
 
     pub async fn get_user_by_id<T: Into<String>>(&self, id: T) -> Result<User> {
-        let mut req = surf::get(&self.url.join(&strfmt!(GET_USER_BY_ID_EP, id=>id.into())?)?)
-            .header(
-                "X-Emby-Authorization",
-                self.auth
-                    .as_ref()
-                    .ok_or(JellyfinError::AuthNotFound)?
-                    .to_emby_header(),
-            )
-            .await?;
+        let mut req = surf::get(
+            &self
+                .url
+                .join("/Users/".to_owned().add(id.into().as_str()).as_str())?,
+        )
+        .header(
+            "X-Emby-Authorization",
+            self.auth
+                .as_ref()
+                .ok_or(JellyfinError::AuthNotFound)?
+                .to_emby_header(),
+        )
+        .await?;
         Ok(req.body_json::<User>().await?)
     }
 
     pub async fn delete_user<T: Into<String>>(&self, id: T) -> Result<()> {
-        let _req = surf::delete(&self.url.join(&strfmt!(DELETE_USER_EP, id=>id.into())?)?)
+        let _req = surf::delete(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -268,7 +274,7 @@ impl JellyfinClient {
     }
 
     pub async fn update_user<T: Into<String>>(&self, id: T, new_info: User) -> Result<()> {
-        let _req = surf::post(&self.url.join(&strfmt!(UPDATE_USER_EP, id=>id.into())?)?)
+        let _req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .body_json(&new_info)?
             .header(
                 "X-Emby-Authorization",
@@ -281,25 +287,33 @@ impl JellyfinClient {
         Ok(())
     }
 
-    pub async fn auth_user_std<T: Into<String> + Clone>(&mut self, id: T, password: T) -> Result<()> {
+    pub async fn auth_user_std<T: Into<String> + Clone>(
+        &mut self,
+        id: T,
+        password: T,
+    ) -> Result<()> {
         let mut hasher = sha1::Sha1::new();
         hasher.update(password.clone().into());
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::post(&self.url.join(&strfmt!(AUTH_USER_STD_EP, id=>id.into())?)?)
+        let mut req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .query(&AuthUserStdQuery {
                 pw: password.into(),
                 password: format!("{:x}", hasher.finalize())
             })?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
-        
+
         self.auth = Some(req.body_json::<UserAuth>().await?);
         Ok(())
     }
 
-    pub async fn update_user_conf<T: Into<String>>(&self, id: T, new_conf: UserConfiguration) -> Result<()> {
-        let _req = surf::post(&self.url.join(&strfmt!(UPDATE_USER_CONF_EP, id=>id.into())?)?)
+    pub async fn update_user_conf<T: Into<String>>(
+        &self,
+        id: T,
+        new_conf: UserConfiguration,
+    ) -> Result<()> {
+        let _req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .body_json(&new_conf)?
             .header(
                 "X-Emby-Authorization",
@@ -312,8 +326,12 @@ impl JellyfinClient {
         Ok(())
     }
 
-    pub async fn update_user_password<T: Into<String>>(&self, id: T, new_password: T) -> Result<()> {
-        let _req = surf::post(&self.url.join(&strfmt!(UPDATE_USER_PASSWORD_EP, id=>id.into())?)?)
+    pub async fn update_user_password<T: Into<String>>(
+        &self,
+        id: T,
+        new_password: T,
+    ) -> Result<()> {
+        let _req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .body_json(&json!({ "NewPw": new_password.into() }))?
             .header(
                 "X-Emby-Authorization",
@@ -326,8 +344,12 @@ impl JellyfinClient {
         Ok(())
     }
 
-    pub async fn update_user_policy<T: Into<String>>(&self, id: T, new_policy: UserPolicy) -> Result<()> {
-        let _req = surf::post(&self.url.join(&strfmt!(UPDATE_USER_POLICY_EP, id=>id.into())?)?)
+    pub async fn update_user_policy<T: Into<String>>(
+        &self,
+        id: T,
+        new_policy: UserPolicy,
+    ) -> Result<()> {
+        let _req = surf::post(&self.url.join("/Users/")?.join(id.into().as_str())?)
             .body_json(&new_policy)?
             .header(
                 "X-Emby-Authorization",
@@ -340,10 +362,14 @@ impl JellyfinClient {
         Ok(())
     }
 
-    pub async fn auth_user_name<T: Into<String>>(&mut self, username: T, password: T) -> Result<()> {
+    pub async fn auth_user_name<T: Into<String>>(
+        &mut self,
+        username: T,
+        password: T,
+    ) -> Result<()> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::post(&self.url.join(&AUTH_USER_NAME_EP)?)
+        let mut req = surf::post(&self.url.join("/Users/AuthenticateByName")?)
             .body_json(&json!({
                 "Username": username.into(),
                 "Pw": password.into()
@@ -357,7 +383,7 @@ impl JellyfinClient {
     pub async fn user_forgot_password<T: Into<String>>(&self, username: T) -> Result<()> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let _req = surf::post(&self.url.join(&USER_FORGOT_PASSWORD_EP)?)
+        let _req = surf::post(&self.url.join("/Users/SendPasswordResetEmail")?)
             .body_json(&json!({
                 "EnteredUsername": username.into()
             }))?
@@ -369,7 +395,7 @@ impl JellyfinClient {
     pub async fn user_redeem_forgot_password_pin<T: Into<String>>(&self, pin: T) -> Result<()> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let _req = surf::post(&self.url.join(&USER_REDEEM_FORGOT_PASSWORD_PIN_EP)?)
+        let _req = surf::post(&self.url.join("/Users/RedeemPasswordResetToken")?)
             .body_json(&json!({
                 "Pin": pin.into()
             }))?
@@ -379,7 +405,7 @@ impl JellyfinClient {
     }
 
     pub async fn get_user_by_auth(&self) -> Result<User> {
-        let mut req = surf::get(&self.url.join(&GET_USER_BY_AUTH_EP)?)
+        let mut req = surf::get(&self.url.join("/Users/Authenticate")?)
             .header(
                 "X-Emby-Authorization",
                 self.auth
@@ -392,7 +418,7 @@ impl JellyfinClient {
     }
 
     pub async fn create_user<T: Into<String>>(&self, username: T, password: T) -> Result<User> {
-        let mut req = surf::post(&self.url.join(&CREATE_USER_EP)?)
+        let mut req = surf::post(&self.url.join("/Users")?)
             .body_json(&json!({
                 "Name": username.into(),
                 "Password": password.into()
@@ -411,7 +437,7 @@ impl JellyfinClient {
     pub async fn get_public_user_list(&self) -> Result<Vec<User>> {
         let device_name = whoami::devicename().replace(" ", "_");
 
-        let mut req = surf::get(&self.url.join(&GET_PUBLIC_USER_LIST_EP)?)
+        let mut req = surf::get(&self.url.join("/Users/Public")?)
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
         Ok(req.body_json::<Vec<User>>().await?)
