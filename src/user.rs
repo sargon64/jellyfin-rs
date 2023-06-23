@@ -478,7 +478,7 @@ impl JellyfinClient {
     pub async fn create_user<T: Into<String>>(&self, username: T, password: T) -> Result<User> {
         let req = self
             .client
-            .post(self.url.join("/Users")?)
+            .post(self.url.join("/Users/New")?)
             .json(&json!({
                 "Name": username.into(),
                 "Password": password.into()
