@@ -241,7 +241,7 @@ impl JellyfinClient {
             )
             .await?;
 
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
 
@@ -263,7 +263,7 @@ impl JellyfinClient {
         )
         .await?;
 
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
 
@@ -281,7 +281,7 @@ impl JellyfinClient {
             )
             .await?;
 
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
 
@@ -300,7 +300,7 @@ impl JellyfinClient {
             )
             .await?;
 
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
         Ok(())
@@ -323,7 +323,7 @@ impl JellyfinClient {
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
 
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
 
@@ -347,7 +347,7 @@ impl JellyfinClient {
             )
             .await?;
 
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
 
@@ -370,7 +370,7 @@ impl JellyfinClient {
             )
             .await?;
 
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
 
@@ -392,7 +392,7 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
         Ok(())
@@ -412,7 +412,7 @@ impl JellyfinClient {
             }))?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
         self.auth = Some(req.body_json::<UserAuth>().await?);
@@ -428,7 +428,7 @@ impl JellyfinClient {
             }))?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
         Ok(())
@@ -443,7 +443,7 @@ impl JellyfinClient {
             }))?
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
         Ok(())
@@ -459,7 +459,7 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
         Ok(req.body_json::<User>().await?)
@@ -479,7 +479,7 @@ impl JellyfinClient {
                     .to_emby_header(),
             )
             .await?;
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
         Ok(req.body_json::<User>().await?)
@@ -491,9 +491,19 @@ impl JellyfinClient {
         let mut req = surf::get(&self.url.join("/Users/Public")?)
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .await?;
-        if cfg!(debug) {
+        if true {
             dbg!(req.body_string().await?);
         };
         Ok(req.body_json::<Vec<User>>().await?)
+    }
+}
+
+#[test]
+//test the debug feature
+fn test_debug() {
+    if true {
+        dbg!("Debug is enabled");
+    } else {
+        dbg!("Debug is disabled");
     }
 }
