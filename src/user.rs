@@ -225,7 +225,7 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(" ", "_");
 
         let req = self
-            .client.post(self.url.join("/Users")?.join(id.into().as_str())?.join("/Authenticate")?)
+            .client.post(self.url.join("/Users/")?.join(id.into().as_str())?.join("/Authenticate")?)
             .query(&AuthUserStdQuery {
                 pw: password.into(),
                 password: format!("{:x}", hasher.finalize())
@@ -299,10 +299,11 @@ impl JellyfinClient {
         let _req = self
             .client
             .post(
-                self.url
-                    .join("/Users")?
-                    .join(id.into().as_str())?
-                    .join("/Policy")?,
+                format!(
+                    "{}/Users/{}/Policy",
+                    self.url.to_string(),
+                    id.into().as_str()
+                )
             )
             .json(&new_policy)
             .header(
@@ -386,7 +387,7 @@ impl JellyfinClient {
     pub async fn create_user<T: Into<String>>(&self, username: T, password: T) -> Result<User> {
         let req = self
             .client
-            .post(self.url.join("/Users")?)
+            .post(self.url.join("/Users/New")?)
             .json(&json!({
                 "Name": username.into(),
                 "Password": password.into()
