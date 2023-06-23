@@ -6,9 +6,10 @@ pub mod err;
 pub mod session;
 pub mod items;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct JellyfinClient {
     url: Url,
+    client: reqwest::Client,
     auth: Option<UserAuth>
 }
 
@@ -18,6 +19,7 @@ impl JellyfinClient {
     pub async fn new<T: Into<String>>(url: T) -> err::Result<Self> {
         Ok(Self {
             url: Url::parse(&url.into())?,
+            client: reqwest::Client::new(),
             auth: None
         })
     }
@@ -29,6 +31,7 @@ impl JellyfinClient {
     pub async fn new_auth_std<T: Into<String>>(url: T, id: T, password: T) -> err::Result<Self> {
         let mut client = Self {
             url: Url::parse(&url.into())?,
+            client: reqwest::Client::new(),
             auth: None
         };
         client.auth_user_std(id.into(), password.into()).await?;
@@ -42,6 +45,7 @@ impl JellyfinClient {
     pub async fn new_auth_name<T: Into<String>>(url: T, username: T, password: T) -> err::Result<Self> {
         let mut client = Self {
             url: Url::parse(&url.into())?,
+            client: reqwest::Client::new(),
             auth: None
         };
         client.auth_user_name(username.into(), password.into()).await?;

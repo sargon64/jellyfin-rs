@@ -4,7 +4,7 @@ pub type Result<T> = std::result::Result<T, JellyfinError>;
 
 #[derive(Debug)]
 pub enum JellyfinError {
-    NetworkError(surf::Error),
+    NetworkError(reqwest::Error),
     UrlParseError(url::ParseError),
     AuthNotFound
 }
@@ -25,8 +25,8 @@ impl fmt::Display for JellyfinError {
     }
 }
 
-impl From<surf::Error> for JellyfinError {
-    fn from(value: surf::Error) -> Self {
+impl From<reqwest::Error> for JellyfinError {
+    fn from(value: reqwest::Error) -> Self {
         Self::NetworkError(value)
     }
 }
