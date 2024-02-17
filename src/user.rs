@@ -143,7 +143,7 @@ impl JellyfinClient {
         let req = self
             .client
             .get(format!(
-                "{}/Users",
+                "{}Users",
                 self.url,
             ))
             .query(&GetUsersQuery {
@@ -167,7 +167,7 @@ impl JellyfinClient {
         let req = self
             .client
             .get(format!(
-                "{}/Users/{}",
+                "{}Users/{}",
                 self.url,
                 id.into().as_str()
             ))
@@ -188,7 +188,7 @@ impl JellyfinClient {
         let _req = self
             .client
             .delete(format!(
-                "{}/Users/{}",
+                "{}Users/{}",
                 self.url,
                 id.into().as_str()
             ))
@@ -209,7 +209,7 @@ impl JellyfinClient {
         let _req = self
             .client
             .post(format!(
-                "{}/Users/{}",
+                "{}Users/{}",
                 self.url,
                 id.into().as_str()
             ))
@@ -238,7 +238,7 @@ impl JellyfinClient {
 
         let req = self
             .client.post(format!(
-                "{}/Users/{}/Authenticate",
+                "{}Users/{}/Authenticate",
                 self.url,
                 id.into().as_str()
             ))
@@ -262,7 +262,7 @@ impl JellyfinClient {
             .client
             .post(
                 format!(
-                    "{}/Users/{}/Configuration",
+                    "{}Users/{}/Configuration",
                     self.url,
                     id.into().as_str()
                 )
@@ -290,7 +290,7 @@ impl JellyfinClient {
             .client
             .post(
                 format!(
-                    "{}/Users/{}/Password",
+                    "{}Users/{}/Password",
                     self.url,
                     id.into().as_str()
                 )
@@ -318,7 +318,7 @@ impl JellyfinClient {
             .client
             .post(
                 format!(
-                    "{}/Users/{}/Policy",
+                    "{}Users/{}/Policy",
                     self.url,
                     id.into().as_str()
                 )
@@ -345,7 +345,7 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(' ', "_");
 
         let req = self.client.post(format!(
-            "{}/Users/AuthenticateByName",
+            "{}Users/AuthenticateByName",
             self.url
         ))
             .json(&AuthUserNameQuery {
@@ -364,7 +364,7 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(' ', "_");
 
         let _req = self.client.post(format!(
-            "{}/Users/ForgotPassword",
+            "{}Users/ForgotPassword",
             self.url
         )).json(&json!({
                 "EnteredUsername": username.into()
@@ -380,7 +380,7 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(' ', "_");
 
         let _req = self.client.post(format!(
-            "{}/Users/ForgotPassword/Pin",
+            "{}Users/ForgotPassword/Pin",
             self.url
         )).json(&json!({
                 "Pin": pin.into()
@@ -396,7 +396,7 @@ impl JellyfinClient {
         let req = self
             .client
             .get(format!(
-                "{}/Users/Me",
+                "{}Users/Me",
                 self.url
             ))
             .header(
@@ -416,7 +416,7 @@ impl JellyfinClient {
         let req = self
             .client
             .post(format!(
-                "{}/Users/New",
+                "{}Users/New",
                 self.url
             ))
             .json(&json!({
@@ -440,7 +440,7 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(' ', "_");
 
         let req = self.client.get(format!(
-            "{}/Users/Public",
+            "{}Users/Public",
             self.url
         ))
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
