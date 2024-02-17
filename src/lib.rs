@@ -1,6 +1,7 @@
 use url::Url;
 use user::UserAuth;
 
+pub mod activity;
 pub mod user;
 pub mod err;
 pub mod session;
