@@ -69,10 +69,10 @@ pub struct Capabilities {
     pub playable_media_types: Vec<String>,    
     pub supported_commands: Vec<String>,    
     pub supports_media_control: bool,    
-    pub supports_content_uploading: bool,    
+    pub supports_content_uploading: Option<bool>,    
     pub message_callback_url: Option<String>,    
     pub supports_persistent_identifier: bool,    
-    pub supports_sync: bool,    
+    pub supports_sync: Option<bool>,    
     pub device_profile: Option<DeviceProfile>,    
     pub app_store_url: Option<String>,    
     pub icon_url: Option<String>
