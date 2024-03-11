@@ -29,6 +29,520 @@ pub struct User {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
+pub struct MediaStream {
+  //         "Codec": "string",
+  //         "CodecTag": "string",
+  //         "Language": "string",
+  //         "ColorRange": "string",
+  //         "ColorSpace": "string",
+  //         "ColorTransfer": "string",
+  //         "ColorPrimaries": "string",
+  //         "DvVersionMajor": 0,
+  //         "DvVersionMinor": 0,
+  //         "DvProfile": 0,
+  //         "DvLevel": 0,
+  //         "RpuPresentFlag": 0,
+  //         "ElPresentFlag": 0,
+  //         "BlPresentFlag": 0,
+  //         "DvBlSignalCompatibilityId": 0,
+  //         "Comment": "string",
+  //         "TimeBase": "string",
+  //         "CodecTimeBase": "string",
+  //         "Title": "string",
+  //         "VideoRange": "string",
+  //         "VideoRangeType": "string",
+  //         "VideoDoViTitle": "string",
+  //         "LocalizedUndefined": "string",
+  //         "LocalizedDefault": "string",
+  //         "LocalizedForced": "string",
+  //         "LocalizedExternal": "string",
+  //         "DisplayTitle": "string",
+  //         "NalLengthSize": "string",
+  //         "IsInterlaced": true,
+  //         "IsAVC": true,
+  //         "ChannelLayout": "string",
+  //         "BitRate": 0,
+  //         "BitDepth": 0,
+  //         "RefFrames": 0,
+  //         "PacketLength": 0,
+  //         "Channels": 0,
+  //         "SampleRate": 0,
+  //         "IsDefault": true,
+  //         "IsForced": true,
+  //         "Height": 0,
+  //         "Width": 0,
+  //         "AverageFrameRate": 0,
+  //         "RealFrameRate": 0,
+  //         "Profile": "string",
+  //         "Type": "Audio",
+  //         "AspectRatio": "string",
+  //         "Index": 0,
+  //         "Score": 0,
+  //         "IsExternal": true,
+  //         "DeliveryMethod": "Encode",
+  //         "DeliveryUrl": "string",
+  //         "IsExternalUrl": true,
+  //         "IsTextSubtitleStream": true,
+  //         "SupportsExternalStream": true,
+  //         "Path": "string",
+  //         "PixelFormat": "string",
+  //         "Level": 0,
+  //         "IsAnamorphic": true
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct MediaSource {
+    pub protocol: String,
+    pub id: String,
+    pub path: String,
+    pub encoder_path: Option<String>,
+    pub encoder_protocol: Option<String>,
+    pub r#type: String,
+    pub container: String,
+    pub size: i64,
+    pub name: String,
+    pub is_remote: bool,
+    pub etag: Option<String>,
+    pub run_time_ticks: i64,
+    pub read_at_native_framerate: bool,
+    pub ignore_dts: bool,
+    pub ignore_index: bool,
+    pub gen_pts_input: bool,
+    pub supports_transcoding: bool,
+    pub supports_direct_stream: bool,
+    pub supports_direct_play: bool,
+    pub is_infinite_stream: bool,
+    pub requires_opening: bool,
+    pub open_token: Option<String>,
+    pub requires_closing: bool,
+    pub live_stream_id: Option<String>,
+    pub buffer_ms: Option<i64>,
+    pub requires_looping: bool,
+    pub supports_probing: bool,
+    pub video_type: String,
+    pub iso_type: Option<String>,
+    pub video_3d_format: Option<String>,
+    pub media_streams: Vec<MediaStream>,
+    // media_attachments: Vec<MediaAttachment>,
+  //     "MediaAttachments": [
+  //       {
+  //         "Codec": "string",
+  //         "CodecTag": "string",
+  //         "Comment": "string",
+  //         "Index": 0,
+  //         "FileName": "string",
+  //         "MimeType": "string",
+  //         "DeliveryUrl": "string"
+  //       }
+  //     ],
+    pub formats: Vec<String>,
+    pub bitrate: i64,
+    pub timestamp: Option<String>,
+    // required_http_headers: serde_json::Map<String, serde_json::Value>,
+    pub transcoding_url: Option<String>,
+    pub transcoding_sub_protocol: Option<String>,
+    pub transcoding_container: Option<String>,
+    pub analyze_duration_ms: Option<i64>,
+    pub default_audio_stream_index: i64,
+    pub default_subtitle_stream_index: i64,
+  //     "Formats": [
+  //       "string"
+  //     ],
+  //     "RequiredHttpHeaders": {
+  //       "property1": "string",
+  //       "property2": "string"
+  //     },
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct UserItem {
+    pub name: String,
+    pub original_title: Option<String>,
+    pub server_id: String,
+    pub id: String,
+    pub etag: String,
+    pub source_type: Option<String>,
+    pub playlist_item_id: Option<String>,
+    pub date_created: String,
+    pub date_last_media_added: Option<String>,
+    pub extra_type: Option<String>,
+    // airs_before_season_number: i64,
+    // airs_after_season_number: i64,
+    // airs_before_episode_number: i64,
+    pub can_delete: bool,
+    pub can_download: bool,
+    pub has_subtitles: bool,
+    pub preferred_metadata_language: Option<String>,
+    pub preferred_metadata_country_code: Option<String>,
+    pub supports_sync: Option<bool>,
+    pub container: String,
+    pub sort_name: String,
+    pub forced_sort_name: Option<String>,
+    pub video_3d_format: Option<String>,
+    pub premiere_date: Option<String>,
+    pub media_sources: Vec<MediaSource>,
+  // "ExternalUrls": [
+  //   {
+  //     "Name": "string",
+  //     "Url": "string"
+  //   }
+  // ],
+    pub critic_rating: Option<i64>,
+  // "ProductionLocations": [
+  //   "string"
+  // ],
+
+    pub path: String,
+  // enable_media_source_display: bool,
+  // official_rating: String,
+  // custom_rating: String,
+  // channel_id: String,
+  // channel_name: String,
+  // overview: String,
+  // taglines: Vec<String>,
+  // genres: Vec<String>,
+  // community_rating: i64,
+  // cumulative_run_time_ticks: i64,
+  // run_time_ticks: i64,
+  // play_access: String,
+  // aspect_ratio: String,
+  // production_year: i64,
+  // is_place_holder: bool,
+  // number: String,
+  // channel_number: String,
+  // index_number: i64,
+  // index_number_end: i64,
+  // parent_index_number: i64,
+  // "RemoteTrailers": [
+  //   {
+  //     "Url": "string",
+  //     "Name": "string"
+  //   }
+  // ],
+  // "ProviderIds": {
+  //   "property1": "string",
+  //   "property2": "string"
+  // },
+  pub is_hd: Option<bool>,
+  pub is_folder: bool,
+  pub parent_id: String,
+  pub r#type: String,
+  // "People": [
+  //   {
+  //     "Name": "string",
+  //     "Id": "38a5a5bb-dc30-49a2-b175-1de0d1488c43",
+  //     "Role": "string",
+  //     "Type": "string",
+  //     "PrimaryImageTag": "string",
+  //     "ImageBlurHashes": {
+  //       "Primary": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Art": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Backdrop": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Banner": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Logo": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Thumb": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Disc": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Box": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Screenshot": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Menu": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Chapter": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "BoxRear": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       },
+  //       "Profile": {
+  //         "property1": "string",
+  //         "property2": "string"
+  //       }
+  //     }
+  //   }
+  // ],
+  // "Studios": [
+  //   {
+  //     "Name": "string",
+  //     "Id": "38a5a5bb-dc30-49a2-b175-1de0d1488c43"
+  //   }
+  // ],
+  // "GenreItems": [
+  //   {
+  //     "Name": "string",
+  //     "Id": "38a5a5bb-dc30-49a2-b175-1de0d1488c43"
+  //   }
+  // ],
+  // parent_logo_item_id: String,
+  // parent_backdrop_item_id: String,
+  // parent_backdrop_image_tags: Vec<String>,
+  // local_trailer_count: i64,
+  // "UserData": {
+  //   "Rating": 0,
+  //   "PlayedPercentage": 0,
+  //   "UnplayedItemCount": 0,
+  //   "PlaybackPositionTicks": 0,
+  //   "PlayCount": 0,
+  //   "IsFavorite": true,
+  //   "Likes": true,
+  //   "LastPlayedDate": "2019-08-24T14:15:22Z",
+  //   "Played": true,
+  //   "Key": "string",
+  //   "ItemId": "string"
+  // },
+  // recursive_item_count: i64,
+  // child_count: i64,
+  // series_name: String,
+  // series_id: String,
+  // season_id: String,
+  // special_feature_count: i64,
+  // display_preferences_id: String,
+  // status: String,
+  // airtime: String,
+  // air_days: Vec<String>,
+  // tags: Vec<String>,
+  // primary_image_aspect_ratio: String,
+  // artists: Vec<String>,
+  // artist_items: Vec<String>,
+  // album: String,
+  // collection_type: String,
+  // display_order: String,
+  // album_id: String,
+  // album_primary_image_tag: String,
+  // series_primary_image_tag: String,
+  // album_artist: String,
+  // "AlbumArtists": [
+  //   {
+  //     "Name": "string",
+  //     "Id": "38a5a5bb-dc30-49a2-b175-1de0d1488c43"
+  //   }
+  // ],
+  // season_name: String,
+  // "MediaStreams": [
+  //   {
+  //     "Codec": "string",
+  //     "CodecTag": "string",
+  //     "Language": "string",
+  //     "ColorRange": "string",
+  //     "ColorSpace": "string",
+  //     "ColorTransfer": "string",
+  //     "ColorPrimaries": "string",
+  //     "DvVersionMajor": 0,
+  //     "DvVersionMinor": 0,
+  //     "DvProfile": 0,
+  //     "DvLevel": 0,
+  //     "RpuPresentFlag": 0,
+  //     "ElPresentFlag": 0,
+  //     "BlPresentFlag": 0,
+  //     "DvBlSignalCompatibilityId": 0,
+  //     "Comment": "string",
+  //     "TimeBase": "string",
+  //     "CodecTimeBase": "string",
+  //     "Title": "string",
+  //     "VideoRange": "string",
+  //     "VideoRangeType": "string",
+  //     "VideoDoViTitle": "string",
+  //     "LocalizedUndefined": "string",
+  //     "LocalizedDefault": "string",
+  //     "LocalizedForced": "string",
+  //     "LocalizedExternal": "string",
+  //     "DisplayTitle": "string",
+  //     "NalLengthSize": "string",
+  //     "IsInterlaced": true,
+  //     "IsAVC": true,
+  //     "ChannelLayout": "string",
+  //     "BitRate": 0,
+  //     "BitDepth": 0,
+  //     "RefFrames": 0,
+  //     "PacketLength": 0,
+  //     "Channels": 0,
+  //     "SampleRate": 0,
+  //     "IsDefault": true,
+  //     "IsForced": true,
+  //     "Height": 0,
+  //     "Width": 0,
+  //     "AverageFrameRate": 0,
+  //     "RealFrameRate": 0,
+  //     "Profile": "string",
+  //     "Type": "Audio",
+  //     "AspectRatio": "string",
+  //     "Index": 0,
+  //     "Score": 0,
+  //     "IsExternal": true,
+  //     "DeliveryMethod": "Encode",
+  //     "DeliveryUrl": "string",
+  //     "IsExternalUrl": true,
+  //     "IsTextSubtitleStream": true,
+  //     "SupportsExternalStream": true,
+  //     "Path": "string",
+  //     "PixelFormat": "string",
+  //     "Level": 0,
+  //     "IsAnamorphic": true
+  //   }
+  // ],
+  // video_type: String,
+  // part_count: i64,
+  // media_source_count: i64,
+  // "ImageTags": {
+  //   "property1": "string",
+  //   "property2": "string"
+  // },
+  // backdrop_image_tags: Vec<String>,
+  // screenshot_image_tags: Vec<String>,
+  // parent_logo_image_tag: String,
+  // parent_art_item_id: String,
+  // parent_art_image_tag: String,
+  // series_thumb_image_tag: String,
+  // "ImageBlurHashes": {
+  //   "Primary": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Art": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Backdrop": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Banner": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Logo": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Thumb": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Disc": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Box": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Screenshot": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Menu": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Chapter": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "BoxRear": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   },
+  //   "Profile": {
+  //     "property1": "string",
+  //     "property2": "string"
+  //   }
+  // },
+  // series_studio: String,
+  // parent_thumb_item_id: String,
+  // parent_thumb_image_tag: String,
+  // parent_primary_image_item_id: String,
+  // parent_primary_image_tag: String,
+  // "Chapters": [
+  //   {
+  //     "StartPositionTicks": 0,
+  //     "Name": "string",
+  //     "ImagePath": "string",
+  //     "ImageDateModified": "2019-08-24T14:15:22Z",
+  //     "ImageTag": "string"
+  //   }
+  // ],
+  // location_type: String,
+  // iso_type: String,
+  // media_type: String,
+  // end_date: String,
+  // locked_fields: Vec<String>,
+  // trailer_count: i64,
+  // movie_count: i64,
+  // series_count: i64,
+  // program_count: i64,
+  // episode_count: i64,
+  // song_count: i64,
+  // album_count: i64,
+  // artist_count: i64,
+  // music_video_count: i64,
+  // lock_data: bool,
+  // width: i64,
+  // height: i64,
+  // camera_make: String,
+  // camera_model: String,
+  // software: String,
+  // exposure_time: i64,
+  // focal_length: i64,
+  // image_orientation: String,
+  // aperture: i64,
+  // shutter_speed: i64,
+  // latitude: i64,
+  // longitude: i64,
+  // altitude: i64,
+  // iso_speed_rating: i64,
+  // series_timer_id: String,
+  // program_id: String,
+  // channel_primary_image_tag: String,
+  // start_date: String,
+  // completion_percentage: i64,
+  // is_repeat: bool,
+  // episode_title: String,
+  // channel_type: String,
+  // audio: String,
+  // is_movie: bool,
+  // is_sports: bool,
+  // is_series: bool,
+  // is_live: bool,
+  // is_news: bool,
+  // is_kids: bool,
+  // is_premiere: bool,
+  // timer_id: String,
+  // "CurrentProgram": {}
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct UserConfiguration {
     pub audio_language_preference: Option<String>,
     pub play_default_audio_track: bool,
@@ -143,7 +657,7 @@ impl JellyfinClient {
         let req = self
             .client
             .get(format!(
-                "{}/Users",
+                "{}Users",
                 self.url,
             ))
             .query(&GetUsersQuery {
@@ -167,7 +681,7 @@ impl JellyfinClient {
         let req = self
             .client
             .get(format!(
-                "{}/Users/{}",
+                "{}Users/{}",
                 self.url,
                 id.into().as_str()
             ))
@@ -188,7 +702,7 @@ impl JellyfinClient {
         let _req = self
             .client
             .delete(format!(
-                "{}/Users/{}",
+                "{}Users/{}",
                 self.url,
                 id.into().as_str()
             ))
@@ -209,7 +723,7 @@ impl JellyfinClient {
         let _req = self
             .client
             .post(format!(
-                "{}/Users/{}",
+                "{}Users/{}",
                 self.url,
                 id.into().as_str()
             ))
@@ -238,7 +752,7 @@ impl JellyfinClient {
 
         let req = self
             .client.post(format!(
-                "{}/Users/{}/Authenticate",
+                "{}Users/{}/Authenticate",
                 self.url,
                 id.into().as_str()
             ))
@@ -262,7 +776,7 @@ impl JellyfinClient {
             .client
             .post(
                 format!(
-                    "{}/Users/{}/Configuration",
+                    "{}Users/{}/Configuration",
                     self.url,
                     id.into().as_str()
                 )
@@ -290,7 +804,7 @@ impl JellyfinClient {
             .client
             .post(
                 format!(
-                    "{}/Users/{}/Password",
+                    "{}Users/{}/Password",
                     self.url,
                     id.into().as_str()
                 )
@@ -318,7 +832,7 @@ impl JellyfinClient {
             .client
             .post(
                 format!(
-                    "{}/Users/{}/Policy",
+                    "{}Users/{}/Policy",
                     self.url,
                     id.into().as_str()
                 )
@@ -345,7 +859,7 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(' ', "_");
 
         let req = self.client.post(format!(
-            "{}/Users/AuthenticateByName",
+            "{}Users/AuthenticateByName",
             self.url
         ))
             .json(&AuthUserNameQuery {
@@ -364,7 +878,7 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(' ', "_");
 
         let _req = self.client.post(format!(
-            "{}/Users/ForgotPassword",
+            "{}Users/ForgotPassword",
             self.url
         )).json(&json!({
                 "EnteredUsername": username.into()
@@ -380,7 +894,7 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(' ', "_");
 
         let _req = self.client.post(format!(
-            "{}/Users/ForgotPassword/Pin",
+            "{}Users/ForgotPassword/Pin",
             self.url
         )).json(&json!({
                 "Pin": pin.into()
@@ -396,7 +910,7 @@ impl JellyfinClient {
         let req = self
             .client
             .get(format!(
-                "{}/Users/Me",
+                "{}Users/Me",
                 self.url
             ))
             .header(
@@ -416,7 +930,7 @@ impl JellyfinClient {
         let req = self
             .client
             .post(format!(
-                "{}/Users/New",
+                "{}Users/New",
                 self.url
             ))
             .json(&json!({
@@ -440,12 +954,34 @@ impl JellyfinClient {
         let device_name = whoami::devicename().replace(' ', "_");
 
         let req = self.client.get(format!(
-            "{}/Users/Public",
+            "{}Users/Public",
             self.url
         ))
             .header("X-Emby-Authorization", format!("Emby UserId=\"\", Client=\"jellyfin-rs\", Device=\"{}\", DeviceId=\"{:x}\", Version=1, Token=\"\"", device_name, md5::compute(device_name.clone())))
             .send()
             .await?;
+
+        Ok(req.json().await?)
+    }
+
+    pub async fn get_user_item(&self, user_id: &str, item_id: &str) -> Result<UserItem> {
+        let req = self.client.get(format!(
+            "{}Users/{}/Items/{}",
+            self.url,
+            user_id,
+            item_id,
+        ))
+            .header(
+                "X-Emby-Authorization",
+                self.auth
+                    .as_ref()
+                    .ok_or(JellyfinError::AuthNotFound)?
+                    .to_emby_header(),
+            )
+            .send()
+            .await?;
+
+        // panic!("{:?}", req.text().await?);
 
         Ok(req.json().await?)
     }

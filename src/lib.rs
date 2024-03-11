@@ -1,6 +1,7 @@
 use url::Url;
 use user::UserAuth;
 
+pub mod activity;
 pub mod user;
 pub mod err;
 pub mod session;
@@ -15,7 +16,7 @@ pub struct JellyfinClient {
 
 impl JellyfinClient {
     /// Creates a new `JellyfinConnection`
-    /// * `url` The base jellyfin server url, without a traling "/"
+    /// * `url` The base jellyfin server url, without a trailing "/"
     pub async fn new<T: Into<String>>(url: T) -> err::Result<Self> {
         Ok(Self {
             url: Url::parse(&url.into())?,
